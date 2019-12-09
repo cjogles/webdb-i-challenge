@@ -2,6 +2,17 @@ const express = require('express');
 const knex = require('../data/dbConfig');
 const router = express.Router();
 
+function validateAccount(req, res, next) {
+    const accountBody = req.body;
+    if (!accountBody) {
+        res.status(400).json({error: 'Missing Account Data.'});
+      } else if (!accountBody.name || !accountBody.budget) {
+        res.status(400).json({error: 'Missing required Account fields: name or budget.'});
+      } else {
+        next();
+      }
+}
+
 router.get("/", (req, res) => {
     knex
       .select("*")
@@ -32,7 +43,7 @@ router.get("/", (req, res) => {
       });
   });
   
-  router.post("/", (req, res) => {
+  router.post("/", validateAccount, (req, res) => {
     // insert into () values ()
     const accountData = req.body;
   
